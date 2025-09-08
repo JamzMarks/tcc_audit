@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserOperation {
+  LOGIN
+  LOGOUT
+  CREATED
+  UPDATED
+  DELETED
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+model UserLogs {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String
+  email       String
+  operation   UserOperation
+  level       LogLevel      @default(INFO)
+  description String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime      @default(now())
+
+  @@index([userId])
+  @@index([operation])
+  @@index([createdAt])
+}
+
+enum SecurityOperation {
+  MFA_ENABLED
+  MFA_DISABLED
+  ROLE_CHANGED
+  ACCOUNT_LOCKED
+  ACCOUNT_UNLOCKED
+  LOGIN_ATTEMPT
+  PASSWORD_CHANGED
+}
+
+model UserSecurityLogs {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String
+  email       String
+  operation   SecurityOperation
+  level       LogLevel          @default(INFO)
+  description String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime          @default(now())
+
+  @@index([userId])
+  @@index([operation])
+  @@index([createdAt])
+}
+
+enum FileOperation {
+  INSERT
+  DELETED
+  UPDATED
+}
+
+model FilesLogs {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String
+  email       String
+  operation   FileOperation
+  fileName    String?
+  fileSize    Int?
+  fileType    String?
+  folderId    String?
+  level       LogLevel      @default(INFO)
+  description String?
+  createdAt   DateTime      @default(now())
+
+  @@index([userId])
+  @@index([operation])
+  @@index([createdAt])
+}
+
+// enum CameraOperation {
+//   CREATED
+//   TESTED
+//   UPDATED
+//   INNACTIVETED
+//   ACTIVETED
+//   DELETED
+// }
+
+// model CameraLog {
+//   id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   cameraId    String
+//   operation   CameraOperation
+//   level       LogLevel        @default(INFO)
+//   description String? // texto explicativo do evento
+//   ipAddress   String? // opcional: IP do usuário
+//   createdAt   DateTime        @default(now())
+
+//   @@index([cameraId])
+//   @@index([operation])
+//   @@index([createdAt])
+// }
