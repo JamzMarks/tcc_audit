@@ -34,6 +34,11 @@ export class UsersAuditController {
     return this.auditService.findLogs({take});
   }
 
+  @Get(':userId')
+  async findMyLogs(@Param('userId') userId: string){
+    return this.auditService.findLogs({userId});
+  }
+
 //   @Get(':id')
 //   async findLogById(@Param('id') id: string) {
 //     return this.userAuditService.findLogById(id);

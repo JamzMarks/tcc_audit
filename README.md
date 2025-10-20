@@ -96,3 +96,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+CLOUDAMQP_URL="amqps://byulypot:ewjFSI_YABAyW9WriFkOEvvSGEkkBApg@jaragua.lmq.cloudamqp.com/byulypot"
+DATABASE_URL="postgresql://postgres:LRjmz0722@@db.icqlreizjboqgwxgfika.supabase.co:5432/postgres"
+SHADOW_DATABASE_URL="postgresql://postgres:LRjmz0722@@db.icqlreizjboqgwxgfika.supabase.co:5432/postgres_shadow_administration"
