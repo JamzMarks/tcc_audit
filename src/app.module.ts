@@ -1,3 +1,4 @@
+import { LogsController } from '@controllers/logs.controller';
 import { ConsumersModule } from '@modules/Consumers.module';
 import { RabbitMQModule } from '@modules/rabbit.module';
 import { WebSocketModule } from '@modules/webSocket.module';
@@ -7,7 +8,7 @@ import { PrismaService } from '@services/prisma.service';
 
 @Module({
   imports: [RabbitMQModule, WebSocketModule, ConsumersModule],
-  controllers: [],
+  controllers: [LogsController],
   providers: [PrismaService],
 })
 export class AppModule {}

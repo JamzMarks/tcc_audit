@@ -4,7 +4,7 @@ import { LogLevel, UserOperation } from 'generated/prisma';
 ;
 
 @Controller('logs')
-export class UserAuditController {
+export class LogsController {
   constructor(private readonly PrismaService: PrismaService) {}
 
   @Get()
