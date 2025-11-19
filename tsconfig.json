@@ -24,7 +24,9 @@
       "@services/*": ["src/services/*"],
       "@controllers/*": ["src/controllers/*"],
       "@dtos/*": ["src/dtos/*"],
-      "@interceptors/*": ["src/interceptors/*"]
+      "@interceptors/*": ["src/interceptors/*"],
+      "@modules/*": ["src/modules/*"],
+      "@broker/*": ["src/broker/*"]
     }
   }
 }

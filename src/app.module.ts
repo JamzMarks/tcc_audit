@@ -1,13 +1,13 @@
+import { ConsumersModule } from '@modules/Consumers.module';
+import { RabbitMQModule } from '@modules/rabbit.module';
+import { WebSocketModule } from '@modules/webSocket.module';
 import { Module } from '@nestjs/common';
-
-import { UsersAuditController } from '@controllers/userAudit.controller';
-import { UsersAuditService } from '@services/usersAudit.service';
 import { PrismaService } from '@services/prisma.service';
 
 
 @Module({
-  imports: [],
-  controllers: [UsersAuditController],
-  providers: [UsersAuditService, PrismaService],
+  imports: [RabbitMQModule, WebSocketModule, ConsumersModule],
+  controllers: [],
+  providers: [PrismaService],
 })
 export class AppModule {}
