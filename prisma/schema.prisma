@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,46 +6,24 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-enum UserOperation {
-  LOGIN
-  LOGOUT
-  CREATED
-  UPDATED
-  DELETED
-}
-
-enum LogLevel {
-  INFO
-  WARN
-  ERROR
+  schemas  = ["public"]
 }
 
 model UserLogs {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String
   email       String
-  operation   UserOperation
-  level       LogLevel      @default(INFO)
+  createdAt   DateTime      @default(now())
   description String?
   ipAddress   String?
+  level       LogLevel      @default(INFO)
+  operation   UserOperation
   userAgent   String?
-  createdAt   DateTime      @default(now())
+  userId      String
 
   @@index([userId])
   @@index([operation])
   @@index([createdAt])
-}
-
-enum SecurityOperation {
-  MFA_ENABLED
-  MFA_DISABLED
-  ROLE_CHANGED
-  ACCOUNT_LOCKED
-  ACCOUNT_UNLOCKED
-  LOGIN_ATTEMPT
-  PASSWORD_CHANGED
+  @@schema("public")
 }
 
 model UserSecurityLogs {
@@ -68,12 +40,7 @@ model UserSecurityLogs {
   @@index([userId])
   @@index([operation])
   @@index([createdAt])
-}
-
-enum FileOperation {
-  INSERT
-  DELETED
-  UPDATED
+  @@schema("public")
 }
 
 model FilesLogs {
@@ -92,27 +59,93 @@ model FilesLogs {
   @@index([userId])
   @@index([operation])
   @@index([createdAt])
+  @@schema("public")
 }
 
-// enum CameraOperation {
-//   CREATED
-//   TESTED
-//   UPDATED
-//   INNACTIVETED
-//   ACTIVETED
-//   DELETED
-// }
+model User {
+  id         String      @id
+  email      String      @unique
+  firstName  String
+  lastName   String
+  password   String
+  role       Roles       @default(USER)
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime
+  avatar     String?
+  UserConfig UserConfig?
 
-// model CameraLog {
-//   id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-//   cameraId    String
-//   operation   CameraOperation
-//   level       LogLevel        @default(INFO)
-//   description String? // texto explicativo do evento
-//   ipAddress   String? // opcional: IP do usuário
-//   createdAt   DateTime        @default(now())
+  @@schema("public")
+}
 
-//   @@index([cameraId])
-//   @@index([operation])
-//   @@index([createdAt])
-// }
+model UserConfig {
+  id       String   @id
+  userId   String   @unique
+  language Language @default(EN)
+  theme    Theme    @default(LIGHT)
+  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+enum UserOperation {
+  LOGIN
+  LOGOUT
+  CREATED
+  UPDATED
+  DELETED
+
+  @@schema("public")
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+
+  @@schema("public")
+}
+
+enum SecurityOperation {
+  MFA_ENABLED
+  MFA_DISABLED
+  ROLE_CHANGED
+  ACCOUNT_LOCKED
+  ACCOUNT_UNLOCKED
+  LOGIN_ATTEMPT
+  PASSWORD_CHANGED
+
+  @@schema("public")
+}
+
+enum FileOperation {
+  INSERT
+  DELETED
+  UPDATED
+
+  @@schema("public")
+}
+
+enum Language {
+  PTBR
+  EN
+  ES
+
+  @@schema("public")
+}
+
+enum Roles {
+  USER
+  ADMIN
+  ENGINEER
+  AUDITOR
+
+  @@schema("public")
+}
+
+enum Theme {
+  LIGHT
+  DARK
+
+  @@schema("public")
+}
