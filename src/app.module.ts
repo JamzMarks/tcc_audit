@@ -7,7 +7,9 @@ import { PrismaService } from '@services/prisma.service';
 
 
 @Module({
-  imports: [RabbitMQModule, WebSocketModule, ConsumersModule],
+  imports: [RabbitMQModule, WebSocketModule, ConsumersModule,
+    MetricsModule.register()
+  ],
   controllers: [LogsController],
   providers: [PrismaService],
 })

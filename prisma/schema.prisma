@@ -9,59 +9,6 @@ datasource db {
   schemas  = ["public"]
 }
 
-model UserLogs {
-  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email       String
-  createdAt   DateTime      @default(now())
-  description String?
-  ipAddress   String?
-  level       LogLevel      @default(INFO)
-  operation   UserOperation
-  userAgent   String?
-  userId      String
-
-  @@index([userId])
-  @@index([operation])
-  @@index([createdAt])
-  @@schema("public")
-}
-
-model UserSecurityLogs {
-  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String
-  email       String
-  operation   SecurityOperation
-  level       LogLevel          @default(INFO)
-  description String?
-  ipAddress   String?
-  userAgent   String?
-  createdAt   DateTime          @default(now())
-
-  @@index([userId])
-  @@index([operation])
-  @@index([createdAt])
-  @@schema("public")
-}
-
-model FilesLogs {
-  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String
-  email       String
-  operation   FileOperation
-  fileName    String?
-  fileSize    Int?
-  fileType    String?
-  folderId    String?
-  level       LogLevel      @default(INFO)
-  description String?
-  createdAt   DateTime      @default(now())
-
-  @@index([userId])
-  @@index([operation])
-  @@index([createdAt])
-  @@schema("public")
-}
-
 model User {
   id         String      @id
   email      String      @unique
@@ -88,43 +35,7 @@ model UserConfig {
   @@schema("public")
 }
 
-enum UserOperation {
-  LOGIN
-  LOGOUT
-  CREATED
-  UPDATED
-  DELETED
 
-  @@schema("public")
-}
-
-enum LogLevel {
-  INFO
-  WARN
-  ERROR
-
-  @@schema("public")
-}
-
-enum SecurityOperation {
-  MFA_ENABLED
-  MFA_DISABLED
-  ROLE_CHANGED
-  ACCOUNT_LOCKED
-  ACCOUNT_UNLOCKED
-  LOGIN_ATTEMPT
-  PASSWORD_CHANGED
-
-  @@schema("public")
-}
-
-enum FileOperation {
-  INSERT
-  DELETED
-  UPDATED
-
-  @@schema("public")
-}
 
 enum Language {
   PTBR
@@ -149,3 +60,32 @@ enum Theme {
 
   @@schema("public")
 }
+
+model MetricLog {
+  id           Int       @id @default(autoincrement())
+  
+  // Origem
+  queue        String
+  routingKey   String?
+
+  // Informações do tipo da mensagem
+  eventType    String?    // ex: "analysis", "sensor", "telemetry"
+  category     String?    // ex: "pipeline", "error", "device"
+  source       String?    // ex: deviceId, serviceName, microserviço de origem
+
+  // Dados brutos
+  payload      Json
+
+  // Auxiliares
+  receivedAt   DateTime   @default(now())  // quando o consumer processou
+  timestamp    DateTime?                 // timestamp vindo do payload (se tiver)
+
+  // Indexação
+  @@index([queue])
+  @@index([routingKey])
+  @@index([eventType])
+  @@index([category])
+  @@index([source])
+  @@index([timestamp])
+}
+
