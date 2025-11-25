@@ -1,5 +1,5 @@
 import { LogsController } from '@controllers/logs.controller';
-import { ConsumersModule } from '@modules/Consumers.module';
+import { ConsumersModule } from '@modules/consumers.module';
 import { RabbitMQModule } from '@modules/rabbit.module';
 import { WebSocketModule } from '@modules/webSocket.module';
 import { Module } from '@nestjs/common';
