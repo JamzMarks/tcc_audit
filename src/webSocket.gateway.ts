@@ -11,7 +11,7 @@ import { WebSocketService } from '@services/webSocket.service';
 import { Server, Socket } from 'socket.io';
 
 
-@WebSocketGateway(3010, {})
+@WebSocketGateway(4003, {})
 export class WebSocketGatewayMain
   implements OnGatewayConnection, OnGatewayDisconnect
 {

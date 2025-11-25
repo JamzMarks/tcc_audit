@@ -18,7 +18,7 @@ export class RabbitMQService implements OnModuleInit {
 
   }
   async onModuleInit() {
-    const amqpUrl = this.configService.get<string>('AMQP_URL');
+    const amqpUrl = this.configService.get<string>('CLOUDAMQP_URL');
     this.logger.log('Conectando ao RabbitMQ...');
 
     this.connection = connect([amqpUrl]);
