@@ -87,5 +87,7 @@ model MetricLog {
   @@index([category])
   @@index([source])
   @@index([timestamp])
+  
+  @@schema("public")
 }
 

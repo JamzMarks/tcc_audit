@@ -1,14 +1,28 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
 import { RabbitMQService } from '@services/rabbit.service';
 import { ConsumeMessage } from 'amqplib';
+import { METRICS_CONSUMER, MetricsConsumerOptions } from '@decorators/metrics-consumer.decorator';
 
 export abstract class BaseMetricsConsumer implements OnModuleInit {
   protected logger = new Logger(this.constructor.name);
+  private queue: string;
 
   constructor(
     protected readonly rabbit: RabbitMQService,
-    private readonly queue: string,
-  ) {}
+  ) {
+    const metadata = Reflect.getMetadata(
+      METRICS_CONSUMER,
+      this.constructor,
+    ) as MetricsConsumerOptions;
+
+    if (!metadata?.queue) {
+      throw new Error(
+        `${this.constructor.name} não possui @MetricsConsumer com nome da fila.`,
+      );
+    }
+
+    this.queue = metadata.queue;
+  }
 
   async onModuleInit() {
     await this.rabbit.consumerChannel.addSetup(async (channel) => {
@@ -22,7 +36,6 @@ export abstract class BaseMetricsConsumer implements OnModuleInit {
           try {
             const payload = JSON.parse(msg.content.toString());
             await this.handle(payload, msg.properties);
-            // Sem ACK (noAck: true)
           } catch (err) {
             this.logger.error(`Erro na fila ${this.queue}:`, err);
           }

@@ -1,5 +1,5 @@
 import { Controller, Get, Query, ParseIntPipe } from '@nestjs/common';
-import { MetricsReportService } from './metrics-report.service';
+import { MetricsReportService } from '@services/metricsReport.service';
 
 @Controller('metrics')
 export class MetricsReportController {
@@ -20,10 +20,6 @@ export class MetricsReportController {
     return this.report.countByRoutingKey();
   }
 
-  @Get('status')
-  async getByStatus() {
-    return this.report.countByStatus();
-  }
 
   @Get('daily')
   async getDaily(
