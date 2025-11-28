@@ -1,7 +1,8 @@
 import { Provider, Type } from '@nestjs/common';
 import { METRICS_CONSUMER } from '../decorators/metrics-consumer.decorator';
-import { BaseMetricsConsumer } from '../consumers/base-metrics.consumer';
+
 import { RabbitMQService } from '@services/rabbit.service';
+import { BaseMetricsConsumer } from '@broker/base-metrics.consumer';
 
 export function buildMetricsConsumers(consumerClasses: Type<any>[]): Provider[] {
   return consumerClasses.map((ConsumerClass) => {

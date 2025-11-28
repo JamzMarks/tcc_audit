@@ -1,3 +1,6 @@
+import { MetricsConsumer } from "@decorators/metrics-consumer.decorator";
+import { MetricsLogService } from "@services/metricsLog.service";
+
 @MetricsConsumer('analysis.telemetry')
 export class AnalysisTelemetryConsumer {
   constructor(private readonly logService: MetricsLogService) {}

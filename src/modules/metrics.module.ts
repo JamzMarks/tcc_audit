@@ -1,18 +1,18 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { buildMetricsConsumers } from '../utils/metrics-consumer.factory';
-
+import { AnalysisTelemetryConsumer } from '@broker/consumers/analysis-telemetry.consumer';
+import { PipelineTelemetryConsumer } from '@broker/consumers/pipeline.telemetry.consumer';
+import { CommandsTelemetryConsumer } from '@broker/consumers/commands.telemetry.consumer';
+import { TelemetryLoggerConsumer } from '@broker/consumers/telemetry.logger.consumers';
 // importe aqui todos os consumers decorados
-import { SensorConsumer } from './consumers/sensor.consumer';
-import { AnalysisTelemetryConsumer } from './consumers/analysis-telemetry.consumer';
-import { PipelineTelemetryConsumer } from './consumers/pipeline-telemetry.consumer';
-import { ErrorHandlerConsumer } from './consumers/error-handler.consumer';
+
 // etc...
 
 const CONSUMERS = [
-  SensorConsumer,
+  TelemetryLoggerConsumer,
   AnalysisTelemetryConsumer,
   PipelineTelemetryConsumer,
-  ErrorHandlerConsumer,
+  CommandsTelemetryConsumer,
   // adicione novos aqui
 ];
 
