@@ -14,7 +14,7 @@ export abstract class BaseMetricsConsumer implements OnModuleInit {
       METRICS_CONSUMER,
       this.constructor,
     ) as MetricsConsumerOptions;
-
+    console.log(`ouvindo a, ${metadata?.queue}`);
     if (!metadata?.queue) {
       throw new Error(
         `${this.constructor.name} não possui @MetricsConsumer com nome da fila.`,
