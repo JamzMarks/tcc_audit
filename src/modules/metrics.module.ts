@@ -1,44 +1,66 @@
-import { Module, OnModuleInit, Logger, DynamicModule } from '@nestjs/common';
-import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
+import { DynamicModule, Module, Logger, Type } from '@nestjs/common';
+import { existsSync, readdirSync } from 'fs';
+import { join } from 'path';
 import { METRICS_CONSUMER } from '@decorators/metrics-consumer.decorator';
 
 @Module({})
-export class MetricsConsumerModule implements OnModuleInit {
-  private readonly logger = new Logger(MetricsConsumerModule.name);
-
-  constructor(private readonly discovery: DiscoveryService) {}
+export class MetricsConsumerModule {
+  private static readonly logger = new Logger(MetricsConsumerModule.name);
 
   static register(): DynamicModule {
+    const dir = MetricsConsumerModule.resolveConsumersDir();
+    const consumers = this.loadConsumers(dir);
+
+    this.logger.log(`🔍 Encontrados ${consumers.length} consumers.`);
+
     return {
       module: MetricsConsumerModule,
-      imports: [DiscoveryModule],
+      providers: consumers,
+      exports: consumers,
     };
   }
 
-  async onModuleInit() {
-    const providers = this.discovery.getProviders();
+  /** Resolve correto tanto para src quanto dist */
+  private static resolveConsumersDir() {
+    // quando compilado, __dirname → dist/broker
+    const distPath = join(__dirname, 'consumers');
+    if (existsSync(distPath)) return distPath;
 
-    for (const wrapper of providers) {
-      const instance = wrapper.instance;
-      if (!instance) continue;
+    // quando em dev (ts-node), pegar src/
+    const srcPath = join(process.cwd(), 'src/broker/consumers');
+    if (existsSync(srcPath)) return srcPath;
 
-      const queue = Reflect.getMetadata(METRICS_CONSUMER, instance.constructor);
+    throw new Error(
+      `❌ Pasta de consumers não encontrada:
+        - ${distPath}
+        - ${srcPath}`,
+    );
+  }
 
-      if (!queue) continue; // não tem decorator
+  private static loadConsumers(dir: string) {
+    const files = readdirSync(dir);
 
-      if (typeof instance.onModuleInit !== 'function') {
-        this.logger.error(
-          `❌ ${instance.constructor.name} tem @MetricsConsumer mas NÃO estende BaseMetricsConsumer`,
-        );
-        continue;
+    const consumers: Type<any>[] = []; // <-- TIPO CORRETO
+
+    for (const file of files) {
+      if (!file.endsWith('.ts') && !file.endsWith('.js')) continue;
+
+      const moduleExports = require(join(dir, file));
+
+      for (const key of Object.keys(moduleExports)) {
+        const exported = moduleExports[key];
+
+        // precisa ser classe (constructor)
+        if (typeof exported !== 'function') continue;
+
+        const metadata = Reflect.getMetadata(METRICS_CONSUMER, exported);
+        if (metadata) {
+          this.logger.log(`✔ Achado consumer: ${exported.name}`);
+          consumers.push(exported);
+        }
       }
-
-      this.logger.log(
-        `✔ Registrando MetricsConsumer → ${instance.constructor.name} na fila "${queue}"`,
-      );
-
-      // chama o onModuleInit do consumer (consume da fila)
-      await instance.onModuleInit();
     }
+
+    return consumers;
   }
 }
